@@ -1,6 +1,6 @@
 import ast
 import os
-from typing import List, Optional, Union, TypeVar, Type
+from typing import List, Optional, Union, TypeVar, Type, Set
 
 from django.apps import AppConfig, apps
 from django.conf import settings
@@ -160,18 +160,20 @@ def find_template_to_template_references(
 
 
 class StringLiteralVisitor(ast.NodeVisitor):
-    def __init__(self, suffix: str = ".html"):
-        self.suffix = suffix
+    def __init__(self, suffixes: Set[str] = None):
+        self.suffixes = suffixes or {".html", ".txt"}
         self.found_strings: List[StringWithLine] = []
 
     def visit_Str(self, node: ast.Str) -> None:
-        if node.s.endswith(self.suffix):
-            self.found_strings.append(StringWithLine(node.s, node.lineno))
+        for suffix in self.suffixes:
+            if node.s.endswith(suffix):
+                self.found_strings.append(StringWithLine(node.s, node.lineno))
         self.generic_visit(node)
 
     def visit_Constant(self, node: ast.Constant) -> None:
-        if isinstance(node.value, str) and node.value.endswith(self.suffix):
-            self.found_strings.append(StringWithLine(node.value, node.lineno))
+        for suffix in self.suffixes:
+            if isinstance(node.value, str) and node.s.endswith(suffix):
+                self.found_strings.append(StringWithLine(node.value, node.lineno))
         self.generic_visit(node)
 
 
