@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "django-unused2"
+name = "django_unused2"
 version = "0.1.0"
 description = ""
 authors = ["Karel Hovorka <git@karel-hovorka.eu>"]
@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = "^3.0"
+Django = ">=3.0"
 colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]

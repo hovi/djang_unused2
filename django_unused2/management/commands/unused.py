@@ -1,9 +1,11 @@
 from argparse import ArgumentParser
 from typing import Any
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from django_unused2.filter import TemplateFilterOptions
+from django_unused2.filter import TemplateFilterOptions, run_analysis
+from django_unused2.output import print_unreferenced_templates, print_broken_references
 
 
 class Command(BaseCommand):
@@ -41,6 +43,9 @@ class Command(BaseCommand):
         )
 
         if unused_type == "templates":
+            result = run_analysis(filter_options)
+            print_unreferenced_templates(result.never_referenced_templates, settings.BASE_DIR)
+            #print_broken_references(result.broken_references, settings.BASE_DIR)
             if False:
                 exit(1)
         else:

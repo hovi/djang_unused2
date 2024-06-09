@@ -7,8 +7,7 @@ from django_unused2.dataclasses import (
     Template,
     TemplateReference,
     Python,
-    AnalysisResult,
-)
+    AnalysisResult, )
 from django_unused2.file_finder import (
     find_global_templates,
     find_app_templates,
@@ -18,7 +17,7 @@ from django_unused2.file_finder import (
 
 
 def filter_templates(
-    templates: List[Template], filter_options: Optional[TemplateFilterOptions]
+        templates: List[Template], filter_options: Optional[TemplateFilterOptions]
 ) -> List[Template]:
     initial_app_template_count = len([t for t in templates if t.app_config])
 
@@ -55,9 +54,9 @@ def filter_templates(
 
 
 def analyze_references(
-    references: List[TemplateReference],
-    templates: List[Template],
-    python_files: List[Python],
+        references: List[TemplateReference],
+        templates: List[Template],
+        python_files: List[Python],
 ) -> AnalysisResult:
     template_dict: Dict[str, Template] = {
         template.id: template for template in templates
@@ -72,8 +71,8 @@ def analyze_references(
 
     for reference in references:
         if (
-            reference.source_id in python_file_dict
-            and reference.target_id not in template_dict
+                reference.source_id in python_file_dict
+                and reference.target_id not in template_dict
         ):
             pass
         elif reference.source_id in python_file_dict:
@@ -85,7 +84,7 @@ def analyze_references(
             for template_id, template in template_dict.items()
             if template_id not in referenced_templates
         ],
-        key=lambda x: (x.app_config if x.app_config else "", x.id),
+        key=lambda x: (x.app_config.name if x.app_config else "", x.id),
     )
 
     return AnalysisResult(never_referenced_templates, broken_references)
