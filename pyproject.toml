@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "django-unused2"
+version = "0.1.0"
+description = ""
+authors = ["Karel Hovorka <git@karel-hovorka.eu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.0"
+colorama = "^0.4.6"
+
+[tool.poetry.group.dev.dependencies]
+black = "24.4.2"
+tox = "^4.15.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
