@@ -45,8 +45,8 @@ class Command(BaseCommand):
         if unused_type == "templates":
             result = run_analysis(filter_options)
             print_unreferenced_templates(result.never_referenced_templates, settings.BASE_DIR)
-            #print_broken_references(result.broken_references, settings.BASE_DIR)
-            if False:
+            print_broken_references(result.broken_references, settings.BASE_DIR)
+            if not result:
                 exit(1)
         else:
             self.stderr.write(

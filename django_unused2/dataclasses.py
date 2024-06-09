@@ -67,7 +67,7 @@ class Python(BasePath):
 
 @dataclass
 class Template(BasePath):
-    extensions: ClassVar[List[str]] = [".html", ".htm"]
+    extensions: ClassVar[List[str]] = [".html", ".txt"]
 
 
 @dataclass
@@ -81,3 +81,7 @@ class ReferenceGraph:
 class AnalysisResult:
     never_referenced_templates: List[Template] = field(default_factory=list)
     broken_references: List[TemplateReference] = field(default_factory=list)
+
+    def __bool__(self) -> bool:
+        """Return True if the analysis found no issues, False otherwise."""
+        return not self.never_referenced_templates and not self.broken_references

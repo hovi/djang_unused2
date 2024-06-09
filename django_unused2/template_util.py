@@ -7,11 +7,13 @@ from django_unused2.dataclasses import TemplateTokenReference, ReferenceType
 
 
 def extract_template_reference(token: str) -> Optional[str]:
-    include_pattern = re.compile(r"[a-z]+\s*['\"](?P<file_path>[^'\"]+)['\"]")
+    include_pattern = re.compile(r"[a-z]+\s*['\" ](?P<file_path>[^'\" ]+)['\"]")
 
     include_match = include_pattern.search(token)
     if include_match:
         return include_match.group("file_path")
+
+    return token.split(" ")[0]
 
     return None
 
@@ -26,8 +28,8 @@ def extract_template_references(template_text: str) -> List[TemplateTokenReferen
     result = []
     for token in tokens:
         if token.token_type == TokenType.BLOCK and (
-            token.contents.startswith("include ")
-            or token.contents.startswith("extends ")
+                token.contents.startswith("include ")
+                or token.contents.startswith("extends ")
         ):
             reference_type: ReferenceType = ReferenceType.unknown
             if token.contents.startswith("include "):
@@ -36,7 +38,7 @@ def extract_template_references(template_text: str) -> List[TemplateTokenReferen
                 reference_type = ReferenceType.extends
             relative_path = extract_template_reference(token.contents)
             if not relative_path:
-                raise ValueError(f"Unknown token: {token}")
+                raise ValueError(f"Unknown token: {token.contents}")
             result.append(
                 TemplateTokenReference(
                     relative_path,

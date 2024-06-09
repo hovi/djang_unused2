@@ -58,36 +58,44 @@ def analyze_references(
         templates: List[Template],
         python_files: List[Python],
 ) -> AnalysisResult:
-    template_dict: Dict[str, Template] = {
-        template.id: template for template in templates
-    }
-    python_file_dict: Dict[str, Python] = {
-        py_file.id: py_file for py_file in python_files
-    }
-
-    referenced_templates: Set[str] = set()
-
-    broken_references: List[TemplateReference] = [r for r in references if r.broken]
-
-    for reference in references:
-        if (
-                reference.source_id in python_file_dict
-                and reference.target_id not in template_dict
-        ):
-            pass
-        elif reference.source_id in python_file_dict:
-            referenced_templates.add(reference.target_id)
-
-    never_referenced_templates = sorted(
-        [
-            template
-            for template_id, template in template_dict.items()
-            if template_id not in referenced_templates
-        ],
-        key=lambda x: (x.app_config.name if x.app_config else "", x.id),
-    )
+    broken_references = find_broken_references(references, python_files, templates)
+    never_referenced_templates = find_unreferenced_templates(references, templates, python_files)
 
     return AnalysisResult(never_referenced_templates, broken_references)
+
+
+def find_unreferenced_templates(
+    references: List[TemplateReference],
+    templates: List[Template],
+    python_files: List[Python]
+) -> List[Template]:
+    template_dict: Dict[str, Template] = {template.id: template for template in templates}
+    python_file_dict: Dict[str, Python] = {py_file.id: py_file for py_file in python_files}
+
+    visited_templates: Set[str] = set()
+
+    for ref in references:
+        if ref.source_id in python_file_dict and ref.target_id in template_dict:
+            visited_templates.add(ref.target_id)
+
+    for ref in references:
+        if ref.source_id in visited_templates and ref.target_id in template_dict:
+            visited_templates.add(ref.target_id)
+
+    for ref in references:
+        if ref.source_id in visited_templates and ref.target_id in template_dict:
+            visited_templates.add(ref.target_id)
+
+    never_visited = [t for t in templates if t.id not in visited_templates]
+
+    return never_visited
+
+def find_broken_references(
+        references: List[TemplateReference],
+        python_files: List[Python],
+        templates: List[Template]
+) -> List[TemplateReference]:
+    return [r for r in references if r.broken]
 
 
 def run_analysis(config: TemplateFilterOptions) -> AnalysisResult:

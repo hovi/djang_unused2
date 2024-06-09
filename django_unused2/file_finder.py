@@ -23,7 +23,6 @@ def find_app_templates() -> List[Template]:
         if str(config.path).find(str(settings.BASE_DIR)) > -1:
             dir_path = os.path.join(str(config.path), "templates")
             templates.extend(find_templates_in_directory(dir_path, app_config=config))
-
     return templates
 
 
