@@ -22,16 +22,20 @@ class Command(BaseCommand):
             help="What to find: templates (default), views, media",
         )
         parser.add_argument(
+            "-xa",
             "--excluded-apps",
             type=str,
             nargs="*",
             help="List of apps to exclude from the search",
+            dest="excluded_apps",
         )
         parser.add_argument(
+            "-xd",
             "--excluded-template-dirs",
             type=str,
             nargs="*",
             help="List of template directories to exclude from the search",
+            dest="excluded_template_dirs",
         )
 
     def handle(self, *args: Any, **options: dict[str, Any]):

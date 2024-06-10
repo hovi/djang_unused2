@@ -28,8 +28,8 @@ def extract_template_references(template_text: str) -> List[TemplateTokenReferen
     result = []
     for token in tokens:
         if token.token_type == TokenType.BLOCK and (
-                token.contents.startswith("include ")
-                or token.contents.startswith("extends ")
+            token.contents.startswith("include ")
+            or token.contents.startswith("extends ")
         ):
             reference_type: ReferenceType = ReferenceType.unknown
             if token.contents.startswith("include "):

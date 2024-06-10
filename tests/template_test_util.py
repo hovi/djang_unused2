@@ -4,6 +4,8 @@ import tempfile
 import unittest
 from typing import Callable, Tuple, Dict
 
+from django.test import TestCase
+
 
 def file_creator(
     test_instance: unittest.TestCase,
@@ -26,7 +28,7 @@ def file_creator(
     return create_file
 
 
-class TemplateTestCase(unittest.TestCase):
+class TemplateTestCase(TestCase):
     fc: Callable[[str, str], Tuple[str, str]]
     test_dir: str
     file_content: Dict[str, str]
