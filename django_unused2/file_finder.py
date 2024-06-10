@@ -20,9 +20,13 @@ def find_app_templates() -> List[Template]:
     templates: List[Template] = []
 
     for config in apps.get_app_configs():
-        if str(config.path).find(str(settings.BASE_DIR)) > -1:
-            dir_path = os.path.join(str(config.path), "templates")
-            templates.extend(find_templates_in_directory(dir_path, app_config=config))
+        local_app = str(config.path).find(str(settings.BASE_DIR)) > -1
+        dir_path = os.path.join(str(config.path), "templates")
+        templates.extend(
+            find_templates_in_directory(
+                dir_path, app_config=config, local_app=local_app
+            )
+        )
     return templates
 
 
@@ -32,7 +36,10 @@ T = TypeVar(
 
 
 def find_in_directory(
-    dir_path: str, cls: Type[T], app_config: Optional["AppConfig"] = None
+    dir_path: str,
+    cls: Type[T],
+    local_app: bool,
+    app_config: Optional["AppConfig"] = None,
 ) -> List[T]:
     extensions = cls.extensions  # Get the associated extensions directly from the class
     found_items: List[T] = []
@@ -48,21 +55,26 @@ def find_in_directory(
                         base_dir=dir_path,
                         relative_path=relative_path,
                         app_config=app_config,
+                        local_app=local_app,
                     )
                 )
     return found_items
 
 
 def find_templates_in_directory(
-    dir_path: str, app_config: Optional[AppConfig] = None
+    dir_path: str, local_app: bool, app_config: Optional[AppConfig] = None
 ) -> List[Template]:
-    return find_in_directory(dir_path, cls=Template, app_config=app_config)
+    return find_in_directory(
+        dir_path, cls=Template, app_config=app_config, local_app=local_app
+    )
 
 
 def find_python_in_directory(
-    dir_path: str, app_config: Optional[AppConfig] = None
+    dir_path: str, local_app: bool, app_config: Optional[AppConfig] = None
 ) -> List[Python]:
-    return find_in_directory(dir_path, cls=Python, app_config=app_config)
+    return find_in_directory(
+        dir_path, cls=Python, app_config=app_config, local_app=local_app
+    )
 
 
 def find_global_templates() -> List[Template]:
@@ -71,7 +83,10 @@ def find_global_templates() -> List[Template]:
     if settings.TEMPLATES:
         for template_backend in settings.TEMPLATES:
             for directory in template_backend.get("DIRS", []):
-                templates.extend(find_templates_in_directory(directory))
+                local_app = directory.find(str(settings.BASE_DIR)) > -1
+                templates.extend(
+                    find_templates_in_directory(directory, local_app=local_app)
+                )
 
     return templates
 
@@ -83,24 +98,28 @@ def find_py_files(exclude_dirs: Optional[List[str]] = None) -> List[Python]:
     result: List[Python] = []
 
     for config in apps.get_app_configs():
-        if str(config.path).find(str(settings.BASE_DIR)) > -1:
-            dir_path = str(config.path)
-            for root, dirs, files in os.walk(dir_path):
-                if any(exclude_dir in root for exclude_dir in exclude_dirs):
-                    print(f"excluding: {root}")
-                    continue
-                for file in files:
-                    filename, extension = os.path.splitext(file)
-                    if extension[1:] in python_extensions:
-                        absolute_path = os.path.join(root, file).replace("\\", "/")
-                        result.append(
-                            Python(
-                                id=absolute_path,
-                                base_dir=dir_path,
-                                relative_path=os.path.relpath(absolute_path, dir_path),
-                                app_config=config,
-                            )
+        local_app = str(config.path).find(str(settings.BASE_DIR)) > -1
+        path = "/Users/karelhovorka/.virtualenvs/bd/lib/python3.12/site-packages/django/contrib/admin"
+        dir_path = str(config.path)
+        new_files = []
+        for root, dirs, files in os.walk(dir_path):
+            if any(exclude_dir in root for exclude_dir in exclude_dirs):
+                print(f"excluding: {root}")
+                continue
+            for file in files:
+                filename, extension = os.path.splitext(file)
+                if extension[1:] in python_extensions:
+                    absolute_path = os.path.join(root, file).replace("\\", "/")
+                    new_files.append(
+                        Python(
+                            id=absolute_path,
+                            base_dir=dir_path,
+                            relative_path=os.path.relpath(absolute_path, dir_path),
+                            app_config=config,
+                            local_app=local_app,
                         )
+                    )
+            result.extend(new_files)
     return result
 
 

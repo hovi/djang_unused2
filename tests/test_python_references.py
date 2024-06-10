@@ -14,8 +14,8 @@ class TestSimplePython(TemplateTestCase):
         self.fc("templates/template1.html", "")
         self.fc("view.py", "render('templates/template1.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
 
         references = find_python_to_template_references(
             python_files=python_files, templates=templates
@@ -37,8 +37,8 @@ class TestSimplePython(TemplateTestCase):
         self.fc("templates/template1.html", "{% include 'template2.html' %}")
         self.fc("view.py", "render('templates/template1.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
 
         references = find_all_references(python_files=python_files, templates=templates)
         self.assertEqual(

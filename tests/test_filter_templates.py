@@ -18,6 +18,7 @@ class TestFilterTemplates(unittest.TestCase):
             relative_path="dir1/template1.html",
             base_dir="",
             id="dir1/template1.html",
+            local_app=True,
         )
 
         self.app_config2 = MagicMock()
@@ -27,6 +28,7 @@ class TestFilterTemplates(unittest.TestCase):
             relative_path="dir2/template2.html",
             base_dir="",
             id="dir2/template2.html",
+            local_app=True,
         )
 
         self.template3 = Template(
@@ -34,6 +36,7 @@ class TestFilterTemplates(unittest.TestCase):
             relative_path="dir3/template3.html",
             base_dir="",
             id="dir3/template3.html",
+            local_app=True,
         )
         self.templates = [self.template1, self.template2, self.template3]
 

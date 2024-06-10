@@ -1,13 +1,11 @@
 import unittest
 
+from django_unused2.dataclasses import TemplateReference, ReferenceType, Template
 from django_unused2.file_finder import (
     find_templates_in_directory,
-    find_python_to_template_references,
     find_python_in_directory,
     find_all_references,
-    find_template_to_template_references,
 )
-from django_unused2.dataclasses import TemplateReference, ReferenceType, Template
 from django_unused2.filter import analyze_references
 from tests.template_test_util import TemplateTestCase
 
@@ -18,8 +16,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("templates/template1.html", "")
         self.fc("view.py", "render('templates/template1.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
 
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
@@ -33,8 +31,8 @@ class TestAnalyze(TemplateTestCase):
             "templates/template1.html", "{% extends 'templates/../template1.html' %}"
         )
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
 
         references = find_all_references(templates=templates, python_files=python_files)
         analysis = analyze_references(
@@ -60,6 +58,7 @@ class TestAnalyze(TemplateTestCase):
                     relative_path="templates/template1.html",
                     base_dir=self.test_dir,
                     app_config=None,
+                    local_app=True,
                 ),
             ],
         )
@@ -69,8 +68,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("templates/child.html", "{% extends 'templates/base.html' %}")
         self.fc("view.py", "render('templates/child.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -84,8 +83,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("view1.py", "render('templates/shared.html')")
         self.fc("view2.py", "render('templates/shared.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -97,8 +96,8 @@ class TestAnalyze(TemplateTestCase):
     def test_unreferenced_templates(self):
         self.fc("templates/unused.html", "")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -116,8 +115,8 @@ class TestAnalyze(TemplateTestCase):
     def test_incorrect_template_path(self):
         self.fc("view.py", "render('templates/nonexistent.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -135,8 +134,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("templates/final.html", "{% include 'templates/intermediate.html' %}")
         self.fc("view.py", "render('templates/final.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -151,8 +150,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("view.py", "render('templates/valid.html')")
         self.fc("another_view.py", "render('templates/broken.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -166,8 +165,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("templates/child.html", "{% extends 'templates/base.html' %}")
         self.fc("view.py", "render('templates/child.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files
@@ -186,8 +185,8 @@ class TestAnalyze(TemplateTestCase):
         self.fc("templates/final.html", "{% extends 'templates/intermediate.html' %}")
         self.fc("view.py", "render('templates/final.html')")
 
-        templates = find_templates_in_directory(self.test_dir)
-        python_files = find_python_in_directory(self.test_dir)
+        templates = find_templates_in_directory(self.test_dir, local_app=True)
+        python_files = find_python_in_directory(self.test_dir, local_app=True)
         references = find_all_references(python_files=python_files, templates=templates)
         analysis = analyze_references(
             references=references, templates=templates, python_files=python_files

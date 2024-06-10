@@ -14,7 +14,7 @@ class TestSimpleTemplate(TemplateTestCase):
         )
 
         references = find_template_to_template_references(
-            find_templates_in_directory(self.test_dir)
+            find_templates_in_directory(self.test_dir, local_app=True)
         )
         self.assertEqual(
             references,
@@ -35,7 +35,7 @@ class TestSimpleTemplate(TemplateTestCase):
         )
 
         references = find_template_to_template_references(
-            find_templates_in_directory(self.test_dir)
+            find_templates_in_directory(self.test_dir, local_app=True)
         )
         self.assertEqual(
             references,
@@ -57,7 +57,7 @@ class TestSimpleTemplate(TemplateTestCase):
         )
 
         references = find_template_to_template_references(
-            find_templates_in_directory(self.test_dir)
+            find_templates_in_directory(self.test_dir, local_app=True)
         )
         self.assertEqual(references, [])
 
@@ -68,7 +68,7 @@ class TestSimpleTemplate(TemplateTestCase):
         )
 
         references = find_template_to_template_references(
-            find_templates_in_directory(self.test_dir)
+            find_templates_in_directory(self.test_dir, local_app=True)
         )
         self.assertEqual(
             references,
@@ -87,7 +87,7 @@ class TestSimpleTemplate(TemplateTestCase):
         self.fc("template1.html", "\n{% extends 'templates/../template1.html' %}")
 
         references = find_template_to_template_references(
-            find_templates_in_directory(self.test_dir)
+            find_templates_in_directory(self.test_dir, local_app=True)
         )
         self.assertEqual(
             references,

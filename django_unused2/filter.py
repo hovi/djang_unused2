@@ -7,7 +7,8 @@ from django_unused2.dataclasses import (
     Template,
     TemplateReference,
     Python,
-    AnalysisResult, )
+    AnalysisResult,
+)
 from django_unused2.file_finder import (
     find_global_templates,
     find_app_templates,
@@ -17,7 +18,7 @@ from django_unused2.file_finder import (
 
 
 def filter_templates(
-        templates: List[Template], filter_options: Optional[TemplateFilterOptions]
+    templates: List[Template], filter_options: Optional[TemplateFilterOptions]
 ) -> List[Template]:
     initial_app_template_count = len([t for t in templates if t.app_config])
 
@@ -54,23 +55,33 @@ def filter_templates(
 
 
 def analyze_references(
-        references: List[TemplateReference],
-        templates: List[Template],
-        python_files: List[Python],
+    references: List[TemplateReference],
+    templates: List[Template],
+    python_files: List[Python],
 ) -> AnalysisResult:
     broken_references = find_broken_references(references, python_files, templates)
-    never_referenced_templates = find_unreferenced_templates(references, templates, python_files)
+    never_referenced_templates = find_unreferenced_templates(
+        references, templates, python_files
+    )
 
-    return AnalysisResult(never_referenced_templates, broken_references)
+    return AnalysisResult(
+        never_referenced_templates=never_referenced_templates,
+        broken_references=broken_references,
+        references=references,
+    )
 
 
 def find_unreferenced_templates(
     references: List[TemplateReference],
     templates: List[Template],
-    python_files: List[Python]
+    python_files: List[Python],
 ) -> List[Template]:
-    template_dict: Dict[str, Template] = {template.id: template for template in templates}
-    python_file_dict: Dict[str, Python] = {py_file.id: py_file for py_file in python_files}
+    template_dict: Dict[str, Template] = {
+        template.id: template for template in templates
+    }
+    python_file_dict: Dict[str, Python] = {
+        py_file.id: py_file for py_file in python_files
+    }
 
     visited_templates: Set[str] = set()
 
@@ -86,16 +97,22 @@ def find_unreferenced_templates(
         if ref.source_id in visited_templates and ref.target_id in template_dict:
             visited_templates.add(ref.target_id)
 
+    for ref in references:
+        if ref.source_id in visited_templates and ref.target_id in template_dict:
+            visited_templates.add(ref.target_id)
+
     never_visited = [t for t in templates if t.id not in visited_templates]
 
     return never_visited
 
+
 def find_broken_references(
-        references: List[TemplateReference],
-        python_files: List[Python],
-        templates: List[Template]
+    references: List[TemplateReference],
+    python_files: List[Python],
+    templates: List[Template],
 ) -> List[TemplateReference]:
-    return [r for r in references if r.broken]
+    local_ids = set([t.id for t in templates if t.local_app])
+    return [r for r in references if r.broken and r.source_id in local_ids]
 
 
 def run_analysis(config: TemplateFilterOptions) -> AnalysisResult:

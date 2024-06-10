@@ -50,6 +50,7 @@ class BasePath:
     base_dir: str
     relative_path: str
     app_config: Optional["AppConfig"]
+    local_app: bool
 
     @property
     def absolute_path(self):
@@ -81,6 +82,7 @@ class ReferenceGraph:
 class AnalysisResult:
     never_referenced_templates: List[Template] = field(default_factory=list)
     broken_references: List[TemplateReference] = field(default_factory=list)
+    references: List[TemplateReference] = field(default_factory=list)
 
     def __bool__(self) -> bool:
         """Return True if the analysis found no issues, False otherwise."""
