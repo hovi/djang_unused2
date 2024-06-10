@@ -26,6 +26,13 @@ class ReferenceType(enum.Enum):
 
 
 @dataclass
+class TemplateTokenReference:
+    file_path: str
+    line_number: int
+    reference_type: ReferenceType
+
+
+@dataclass
 class TemplateReference:
     source_id: str
     target_id: str
@@ -35,13 +42,6 @@ class TemplateReference:
     """
     line: int
     broken: bool = field(default=False)
-
-
-@dataclass
-class TemplateTokenReference:
-    file_path: str
-    line_number: int
-    reference_type: ReferenceType
 
 
 @dataclass
@@ -72,17 +72,12 @@ class Template(BasePath):
 
 
 @dataclass
-class ReferenceGraph:
-    references: TemplateReference
-    python_files = List[Python]
-    templates: List[Template]
-
-
-@dataclass
 class AnalysisResult:
     never_referenced_templates: List[Template] = field(default_factory=list)
     broken_references: List[TemplateReference] = field(default_factory=list)
     references: List[TemplateReference] = field(default_factory=list)
+    templates: List[Template] = field(default_factory=list)
+    python_files: List[Python] = field(default_factory=list)
 
     def __bool__(self) -> bool:
         """Return True if the analysis found no issues, False otherwise."""

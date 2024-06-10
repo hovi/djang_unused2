@@ -4,8 +4,8 @@ from typing import Any
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from django_unused2.dataclasses import ReferenceType
 from django_unused2.filter import TemplateFilterOptions, run_analysis
+from django_unused2.graph import generate_dot, generate_cytoscape_json
 from django_unused2.output import print_unreferenced_templates, print_broken_references
 
 
@@ -18,7 +18,7 @@ class Command(BaseCommand):
             type=str,
             nargs="?",
             default="templates",
-            choices=["templates"],
+            choices=["templates", "template_graph"],
             help="What to find: templates (default), views, media",
         )
         parser.add_argument(
@@ -51,6 +51,13 @@ class Command(BaseCommand):
             print_broken_references(result.broken_references, settings.BASE_DIR)
             if not result:
                 exit(1)
+        elif unused_type == "template_graph":
+            result = run_analysis(filter_options)
+            with open(settings.BASE_DIR / "unused.dot", "w") as f:
+                f.write(generate_dot(result))
+            with open(settings.BASE_DIR / "cytoscape.json", "w") as f:
+                f.write(generate_cytoscape_json(result))
+
         else:
             self.stderr.write(
                 self.style.ERROR(

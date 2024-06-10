@@ -99,7 +99,6 @@ def find_py_files(exclude_dirs: Optional[List[str]] = None) -> List[Python]:
 
     for config in apps.get_app_configs():
         local_app = str(config.path).find(str(settings.BASE_DIR)) > -1
-        path = "/Users/karelhovorka/.virtualenvs/bd/lib/python3.12/site-packages/django/contrib/admin"
         dir_path = str(config.path)
         new_files = []
         for root, dirs, files in os.walk(dir_path):

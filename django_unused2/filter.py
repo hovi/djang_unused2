@@ -68,6 +68,8 @@ def analyze_references(
         never_referenced_templates=never_referenced_templates,
         broken_references=broken_references,
         references=references,
+        python_files=python_files,
+        templates=templates,
     )
 
 
