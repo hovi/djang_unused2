@@ -1,7 +1,5 @@
 from typing import List, Optional, Dict, Set
 
-from colorama import Fore
-
 from django_unused2.dataclasses import (
     TemplateFilterOptions,
     Template,

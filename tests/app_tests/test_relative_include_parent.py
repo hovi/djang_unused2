@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.test import override_settings
 
 from django_unused2.dataclasses import TemplateFilterOptions

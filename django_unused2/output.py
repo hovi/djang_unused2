@@ -28,7 +28,7 @@ def print_unreferenced_templates(analysis_result: AnalysisResult, base_dir: str)
         return
 
     # Group templates by AppConfig name
-    grouped_templates = {}
+    grouped_templates: Dict[str, List] = {}
     for template in templates:
         if not template.local_app:
             continue
@@ -102,14 +102,9 @@ def print_broken_references(references: List[TemplateReference], base_dir: str):
         target_path = os.path.relpath(ref.target_id, base_dir)
         ref_type_color = reference_type_colors.get(ref.reference_type, Fore.WHITE)
         print(
-            Fore.BLUE
-            + f"{source_path} "
-            + ref_type_color
-            + f"{ref.reference_type.value} "
-            + Fore.BLUE
-            + f"{target_path} "
-            + Fore.YELLOW
-            + "at line "
-            + Fore.GREEN
-            + f"{ref.line}"
+            f"{Fore.BLUE}{source_path} "
+            f"{ref_type_color}{ref.reference_type.value} "
+            f"{Fore.BLUE}{target_path} "
+            f"{Fore.YELLOW}at line "
+            f"{Fore.GREEN}{ref.line}"
         )

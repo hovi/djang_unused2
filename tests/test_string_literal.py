@@ -1,7 +1,7 @@
 import unittest
 
 from django_unused2.dataclasses import StringWithLine
-from django_unused2.file_finder import extract_string_literals, StringLiteralVisitor
+from django_unused2.file_finder import extract_string_literals
 
 
 class TestStringLiteralExtraction(unittest.TestCase):
