@@ -1,8 +1,9 @@
 import os
+from typing import List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-INSTALLED_APPS = []
+INSTALLED_APPS: List[str] = []
 
 DATABASES = {
     "default": {

@@ -15,8 +15,6 @@ def extract_template_reference(token: str) -> Optional[str]:
 
     return token.split(" ")[0]
 
-    return None
-
 
 def extract_template_references(template_text: str) -> List[TemplateTokenReference]:
     """
@@ -27,18 +25,18 @@ def extract_template_references(template_text: str) -> List[TemplateTokenReferen
     tokens = lexer.tokenize()
     result = []
     for token in tokens:
+        contents = token.contents
         if token.token_type == TokenType.BLOCK and (
-            token.contents.startswith("include ")
-            or token.contents.startswith("extends ")
+            contents.startswith("include ") or contents.startswith("extends ")
         ):
             reference_type: ReferenceType = ReferenceType.unknown
-            if token.contents.startswith("include "):
+            if contents.startswith("include "):
                 reference_type = ReferenceType.include
-            if token.contents.startswith("extends "):
+            if contents.startswith("extends "):
                 reference_type = ReferenceType.extends
-            relative_path = extract_template_reference(token.contents)
+            relative_path = extract_template_reference(contents)
             if not relative_path:
-                raise ValueError(f"Unknown token: {token.contents}")
+                raise ValueError(f"Unknown token: {contents}")
             result.append(
                 TemplateTokenReference(
                     relative_path,
