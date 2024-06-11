@@ -66,7 +66,7 @@ def print_referenced_by(
     if len(reference_chains) > 0:
         print("Referenced by:\n")
         for rc in reference_chains:
-            print("\t ->" + " -> ".join([rel_path(chain) for chain in rc]))
+            print("\t -> " + " -> ".join([rel_path(chain) for chain in rc]))
         print()
 
 

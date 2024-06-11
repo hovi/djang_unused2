@@ -1,5 +1,6 @@
+import json
 from argparse import ArgumentParser
-from typing import Any
+from typing import Any, Dict
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -45,18 +46,17 @@ class Command(BaseCommand):
             help="List of specific templates to exclude from the search",
             dest="excluded_templates",
         )
+        parser.add_argument(
+            "-c",
+            "--config",
+            type=str,
+            help="Path to a JSON configuration file",
+            dest="config_path",
+        )
 
     def handle(self, *args: Any, **options: dict[str, Any]):
         unused_type = options["unused_type"]
-        excluded_apps = options.get("excluded_apps")
-        excluded_template_dirs = options.get("excluded_template_dirs")
-        excluded_templates = options.get("excluded_templates")
-
-        filter_options = TemplateFilterOptions(
-            excluded_apps=excluded_apps,
-            excluded_template_dirs=excluded_template_dirs,
-            excluded_templates=excluded_templates,
-        )
+        filter_options = get_filter_options(options)
 
         if unused_type == "templates":
             result = run_analysis(filter_options)
@@ -80,3 +80,22 @@ class Command(BaseCommand):
                 )
             )
             exit(1)
+
+
+def get_filter_options(options: Dict[str, Any]) -> TemplateFilterOptions:
+    config_path = options.get("config_path")
+
+    if config_path:
+        with open(config_path, "r", encoding="utf-8") as config_file:
+            config_data = json.load(config_file)
+            return TemplateFilterOptions(
+                excluded_apps=config_data.get("excluded_apps", []),
+                excluded_template_dirs=config_data.get("excluded_template_dirs", []),
+                excluded_templates=config_data.get("excluded_templates", []),
+            )
+
+    return TemplateFilterOptions(
+        excluded_apps=options.get("excluded_apps", []),
+        excluded_template_dirs=options.get("excluded_template_dirs", []),
+        excluded_templates=options.get("excluded_templates", []),
+    )
