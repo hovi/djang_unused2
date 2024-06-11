@@ -37,20 +37,31 @@ class Command(BaseCommand):
             help="List of template directories to exclude from the search",
             dest="excluded_template_dirs",
         )
+        parser.add_argument(
+            "-xt",
+            "--excluded-templates",
+            type=str,
+            nargs="*",
+            help="List of specific templates to exclude from the search",
+            dest="excluded_templates",
+        )
 
     def handle(self, *args: Any, **options: dict[str, Any]):
         unused_type = options["unused_type"]
         excluded_apps = options.get("excluded_apps")
         excluded_template_dirs = options.get("excluded_template_dirs")
+        excluded_templates = options.get("excluded_templates")
 
         filter_options = TemplateFilterOptions(
-            excluded_apps=excluded_apps, excluded_template_dirs=excluded_template_dirs
+            excluded_apps=excluded_apps,
+            excluded_template_dirs=excluded_template_dirs,
+            excluded_templates=excluded_templates,
         )
 
         if unused_type == "templates":
             result = run_analysis(filter_options)
             print_unreferenced_templates(
-                result.never_referenced_templates, settings.BASE_DIR
+                analysis_result=result, base_dir=settings.BASE_DIR
             )
             print_broken_references(result.broken_references, settings.BASE_DIR)
             if not result:

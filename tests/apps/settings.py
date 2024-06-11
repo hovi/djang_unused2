@@ -2,10 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-INSTALLED_APPS = [
-    "django.contrib.contenttypes",
-    "django.contrib.auth",
-]
+INSTALLED_APPS = []
 
 DATABASES = {
     "default": {
@@ -17,7 +14,7 @@ DATABASES = {
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "tests", "test_data", "templates")],
+        "DIRS": [],
         "APP_DIRS": True,
     },
 ]

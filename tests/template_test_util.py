@@ -4,7 +4,12 @@ import tempfile
 import unittest
 from typing import Callable, Tuple, Dict
 
+import django
 from django.test import TestCase
+import os
+
+os.environ["DJANGO_SETTINGS_MODULE"] = "tests.apps.settings"
+django.setup()
 
 
 def file_creator(

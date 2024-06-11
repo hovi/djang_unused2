@@ -1,7 +1,7 @@
 import enum
 import os
 from dataclasses import dataclass, field
-from typing import Optional, Iterable, List, ClassVar
+from typing import Optional, Iterable, List, ClassVar, Dict
 
 from django.apps import AppConfig
 
@@ -16,6 +16,7 @@ class StringWithLine:
 class TemplateFilterOptions:
     excluded_apps: Optional[Iterable[str]] = None
     excluded_template_dirs: Optional[Iterable[str]] = None
+    excluded_templates: Optional[Iterable[str]] = None
 
 
 class ReferenceType(enum.Enum):
@@ -78,6 +79,18 @@ class AnalysisResult:
     references: List[TemplateReference] = field(default_factory=list)
     templates: List[Template] = field(default_factory=list)
     python_files: List[Python] = field(default_factory=list)
+
+    @property
+    def unused_local_filenames(self) -> List[str]:
+        return [f.relative_path for f in self.never_referenced_templates if f.local_app]
+
+    @property
+    def unused_filenames(self) -> List[str]:
+        return [f.relative_path for f in self.never_referenced_templates]
+
+    @property
+    def templates_by_id(self) -> Dict[str, Template]:
+        return {template.id: template for template in self.templates}
 
     def __bool__(self) -> bool:
         """Return True if the analysis found no issues, False otherwise."""
