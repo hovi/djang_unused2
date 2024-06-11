@@ -47,6 +47,21 @@ def filter_templates(
     return templates
 
 
+def filter_py_files(
+    files: List[Python], filter_options: Optional[TemplateFilterOptions]
+):
+    result = files
+    if filter_options and filter_options.excluded_apps:
+        excluded_apps_set = set(filter_options.excluded_apps)
+        result = [
+            t
+            for t in result
+            if not (t.app_config and t.app_config.name in excluded_apps_set)
+        ]
+
+    return result
+
+
 def analyze_references(
     references: List[TemplateReference],
     templates: List[Template],
@@ -114,6 +129,6 @@ def find_broken_references(
 
 def run_analysis(config: TemplateFilterOptions) -> AnalysisResult:
     templates = filter_templates(find_app_templates() + find_global_templates(), config)
-    python_files = find_py_files()
+    python_files = filter_py_files(find_py_files(), config)
     references = find_all_references(templates, python_files)
     return analyze_references(references, templates, python_files)
