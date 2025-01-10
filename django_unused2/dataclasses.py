@@ -1,9 +1,12 @@
 import enum
 import os
 from dataclasses import dataclass, field
-from typing import Optional, Iterable, List, ClassVar, Dict
+from typing import Optional, Iterable, List, Dict
 
 from django.apps import AppConfig
+from django.conf import settings
+
+from django_unused2.settings import DEFAULTS
 
 
 @dataclass
@@ -64,12 +67,23 @@ class BasePath:
 
 @dataclass
 class Python(BasePath):
-    extensions: ClassVar[List[str]] = [".py"]
+
+    @classmethod
+    def extensions(cls):
+        return [".py"]
 
 
 @dataclass
 class Template(BasePath):
-    extensions: ClassVar[List[str]] = [".html", ".txt"]
+
+    @classmethod
+    def extensions(cls):
+        result = getattr(
+            settings,
+            "UNUSED2_TEMPLATE_EXTENSIONS",
+            DEFAULTS["TEMPLATE_EXTENSIONS"],
+        )
+        return result
 
 
 @dataclass

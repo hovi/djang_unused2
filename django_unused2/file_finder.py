@@ -41,7 +41,7 @@ def find_in_directory(
     local_app: bool,
     app_config: Optional["AppConfig"] = None,
 ) -> List[T]:
-    extensions = cls.extensions
+    extensions = cls.extensions()
     found_items: List[T] = []
     for root, _, files in os.walk(dir_path):
         for file in files:
@@ -179,7 +179,7 @@ def find_template_to_template_references(
 
 class StringLiteralVisitor(ast.NodeVisitor):
     def __init__(self, suffixes: Optional[Set[str]] = None):
-        self.suffixes = suffixes or {".html", ".txt"}
+        self.suffixes = suffixes or set(Template.extensions())
         self.found_strings: List[StringWithLine] = []
 
     def visit_Str(self, node: ast.Str) -> None:
